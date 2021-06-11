@@ -16,8 +16,6 @@ import com.example.myapplication2.database.MeetingTransaction
 class ListWidgetService : RemoteViewsService() {
 
     override fun onGetViewFactory(intent: Intent): RemoteViewsFactory {
-        Log.w("Widget Count", "GOGOGOGO")
-
         return ListRemoteViewsFactory(this.applicationContext, intent)
     }
 }
@@ -43,7 +41,6 @@ internal class ListRemoteViewsFactory(context: Context, intent: Intent) :
 
     override fun onDestroy() {
         mWidgetItems.clear()
-        myDB?.endMeetingTransaction()
     }
 
     override fun getCount(): Int {
@@ -60,7 +57,6 @@ internal class ListRemoteViewsFactory(context: Context, intent: Intent) :
         val fillInIntent = Intent()
         fillInIntent.putExtras(extras)
         rv.setOnClickFillInIntent(R.id.widget_title, fillInIntent)
-        Log.w("Widget Count", "GOGOGOGO")
         try {
             println("Loading view $position")
             Thread.sleep(500)
@@ -88,7 +84,12 @@ internal class ListRemoteViewsFactory(context: Context, intent: Intent) :
     }
 
     override fun onDataSetChanged() {
-//        var allMeeting: List<Meeting> = myDB!!.viewAllMeeting()
+//        mWidgetItems.clear()
+//        val allMeeting: List<Meeting> = myDB!!.viewAllMeeting()
+//        for (i in allMeeting.indices) {
+//            mWidgetItems.add(WidgetItem("${allMeeting[i].title}", "${allMeeting[i].tgl}", "${allMeeting[i].desc}"))
+//            Log.w("widgetitem", "${mWidgetItems}")
+//        }
     }
 
     companion object {

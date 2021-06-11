@@ -3,6 +3,7 @@ package com.example.myapplication2.widgett
 import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -23,16 +24,17 @@ class MyWidget : AppWidgetProvider() {
     ) {
         // There may be multiple widgets active, so update all of them
         for (appWidgetId in appWidgetIds) {
-
-
             val intent = Intent(context, ListWidgetService::class.java)
             intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
             intent.data = Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME))
             val rv = RemoteViews(context.packageName, R.layout.my_widget)
             rv.setRemoteAdapter(R.id.list_view, intent)
             rv.setEmptyView(R.id.list_view, R.id.emptyView)
+            appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.list_view)
             appWidgetManager.updateAppWidget(appWidgetId, rv)
             Log.w("Widget", "${intent}")
+
+
 
             val toastIntent = Intent(context, MyWidget::class.java)
             toastIntent.action = TOAST_ACTION
