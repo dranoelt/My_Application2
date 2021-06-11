@@ -30,7 +30,6 @@ internal class ListRemoteViewsFactory(context: Context, intent: Intent) :
         val allMeeting: List<Meeting> = myDB!!.viewAllMeeting()
         for (i in allMeeting.indices) {
             mWidgetItems.add(WidgetItem("${allMeeting[i].title}", "${allMeeting[i].tgl}", "${allMeeting[i].desc}"))
-            Log.w("widgetitem", "${mWidgetItems}")
         }
         try {
             Thread.sleep(3000)
@@ -63,7 +62,6 @@ internal class ListRemoteViewsFactory(context: Context, intent: Intent) :
         }catch (e: InterruptedException) {
             e.printStackTrace()
         }
-
         return rv
     }
 
@@ -84,18 +82,13 @@ internal class ListRemoteViewsFactory(context: Context, intent: Intent) :
     }
 
     override fun onDataSetChanged() {
-//        mWidgetItems.clear()
-//        val allMeeting: List<Meeting> = myDB!!.viewAllMeeting()
-//        for (i in allMeeting.indices) {
-//            mWidgetItems.add(WidgetItem("${allMeeting[i].title}", "${allMeeting[i].tgl}", "${allMeeting[i].desc}"))
-//            Log.w("widgetitem", "${mWidgetItems}")
-//        }
+        mWidgetItems.clear()
+        val allMeeting: List<Meeting> = myDB!!.viewAllMeeting()
+        for (i in allMeeting.indices) {
+            mWidgetItems.add(WidgetItem("${allMeeting[i].title}", "${allMeeting[i].tgl}", "${allMeeting[i].desc}"))
+            Log.w("widgetitem", "${mWidgetItems}")
+        }
     }
-
-    companion object {
-        private const val mCount = 10
-    }
-
     init {
         mContext = context
         mAppWidgetId = intent.getIntExtra(
@@ -104,8 +97,19 @@ internal class ListRemoteViewsFactory(context: Context, intent: Intent) :
         )
         myDB = MeetingTransaction(this.mContext)
     }
-
 }
+
+
+
+
+
+
+
+
+
+
+
+
 //class StackWidgetService : RemoteViewsService() {
 //    override fun onGetViewFactory(intent: Intent): RemoteViewsFactory {
 //        return StackRemoteViewsFactory(this.applicationContext, intent)

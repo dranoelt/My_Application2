@@ -9,11 +9,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.MyApplication2">
-        <activity android:name=".AddActivitity"></activity>
-
         <receiver android:name=".widgett.MyWidget">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+
             </intent-filter>
 
             <meta-data
@@ -34,6 +33,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity android:name=".AddActivitity">
+            <intent-filter>
+                <action android:name="com.example.myapplication2.widgett.ACTION_CLICK"/>
+            </intent-filter>
+        </activity>
+        
     </application>
 
 </manifest>

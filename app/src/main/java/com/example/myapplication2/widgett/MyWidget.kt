@@ -3,63 +3,34 @@ package com.example.myapplication2.widgett
 import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
-import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.util.Log
 import android.widget.RemoteViews
-import android.widget.Toast
+import com.example.myapplication2.AddActivitity
 import com.example.myapplication2.R
 
 
 /**
  * Implementation of App Widget functionality.
  */
+
+const val ACTION_CLICK = "ActionClick"
+
 class MyWidget : AppWidgetProvider() {
+
     override fun onUpdate(
-        context: Context,
-        appWidgetManager: AppWidgetManager,
-        appWidgetIds: IntArray
+            context: Context,
+            appWidgetManager: AppWidgetManager,
+            appWidgetIds: IntArray
     ) {
         // There may be multiple widgets active, so update all of them
         for (appWidgetId in appWidgetIds) {
-            val intent = Intent(context, ListWidgetService::class.java)
-            intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
-            intent.data = Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME))
-            val rv = RemoteViews(context.packageName, R.layout.my_widget)
-            rv.setRemoteAdapter(R.id.list_view, intent)
-            rv.setEmptyView(R.id.list_view, R.id.emptyView)
-            appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.list_view)
-            appWidgetManager.updateAppWidget(appWidgetId, rv)
-            Log.w("Widget", "${intent}")
-
-
-
-            val toastIntent = Intent(context, MyWidget::class.java)
-            toastIntent.action = TOAST_ACTION
-            toastIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
-            intent.data = Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME))
-            val toastPendingIntent = PendingIntent.getBroadcast(
-                context, 0, toastIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT
-            )
-            rv.setPendingIntentTemplate(R.id.list_view, toastPendingIntent)
-//            updateAppWidget(context, appWidgetManager, appWidgetId)
+            updateAppWidget(context, appWidgetManager, appWidgetId)
         }
-        super.onUpdate(context, appWidgetManager, appWidgetIds)
     }
 
     override fun onReceive(context: Context, intent: Intent) {
-        val mgr = AppWidgetManager.getInstance(context)
-        if (intent.action == TOAST_ACTION) {
-            val appWidgetId = intent.getIntExtra(
-                AppWidgetManager.EXTRA_APPWIDGET_ID,
-                AppWidgetManager.INVALID_APPWIDGET_ID
-            )
-            val viewIndex = intent.getIntExtra(EXTRA_ITEM, 0)
-            Toast.makeText(context, "Touched view $viewIndex", Toast.LENGTH_SHORT).show()
-        }
         super.onReceive(context, intent)
     }
 
@@ -76,23 +47,58 @@ class MyWidget : AppWidgetProvider() {
     }
 
     companion object {
-        const val TOAST_ACTION = "com.example.myapplication2.TOAST_ACTION"
-        const val EXTRA_ITEM =   "com.example.myapplication2.EXTRA_ITEM"
+        const val EXTRA_ITEM = "com.example.android.myapplication2.EXTRA_ITEM"
+        internal fun updateAppWidget(
+                context: Context,
+                appWidgetManager: AppWidgetManager,
+                appWidgetId: Int
+        ) {
+            val intent = Intent(context, ListWidgetService::class.java)
+            intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
+            intent.data = Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME))
+            val rv = RemoteViews(context.packageName, R.layout.my_widget)
+            rv.setRemoteAdapter(R.id.list_view, intent)
+            rv.setEmptyView(R.id.list_view, R.id.emptyView)
+
+            val actionIntent = Intent(context, AddActivitity::class.java)
+            actionIntent.action = ACTION_CLICK
+            val pendingActionIntent = PendingIntent.getActivity(context, 0, actionIntent, 0)
+            rv.setOnClickPendingIntent(R.id.button, pendingActionIntent)
+
+            appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetId, R.id.list_view)
+            appWidgetManager.updateAppWidget(appWidgetId, rv)
+        }
     }
 }
+
+
+
+
+
+
+
 
 //internal fun updateAppWidget(
 //    context: Context,
 //    appWidgetManager: AppWidgetManager,
 //    appWidgetId: Int
 //) {
-//    val widgetText = context.getString(R.string.appwidget_text)
+//    val intent = Intent(context, ListWidgetService::class.java)
+//    intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
+//    intent.data = Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME))
+//    val rv = RemoteViews(context.packageName, R.layout.my_widget)
+//    rv.setRemoteAdapter(R.id.list_view, intent)
+//    rv.setEmptyView(R.id.list_view, R.id.emptyView)
+//    appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetId, R.id.list_view)
+//    appWidgetManager.updateAppWidget(appWidgetId, rv)
+//
+////    val widgetText = context.getString(R.string.appwidget_text)
 //    // Construct the RemoteViews object
-//    val views = RemoteViews(context.packageName, R.layout.my_widget)
+////    val views = RemoteViews(context.packageName, R.layout.my_widget)
 ////    views.setTextViewText(R.id.appwidget_text_title, widgetText)
 //
 //    // Instruct the widget manager to update the widget
-//    appWidgetManager.updateAppWidget(appWidgetId, views)
+////    appWidgetManager.updateAppWidget(appWidgetId, views)
 //}
 
 //class StackWidgetProvider : AppWidgetProvider() {

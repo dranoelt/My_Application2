@@ -1,5 +1,7 @@
 package com.example.myapplication2
 
+import android.appwidget.AppWidgetManager
+import android.content.ComponentName
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -8,6 +10,7 @@ import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication2.database.*
+import com.example.myapplication2.widgett.MyWidget
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.startActivityForResult
@@ -48,6 +51,8 @@ class MainActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_CODE && resultCode == RESULT_OK) {
+
+
             updateAdapter()
         }
     }
