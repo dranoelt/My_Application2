@@ -9,27 +9,30 @@ import android.widget.RemoteViews
 import android.widget.RemoteViewsService
 import android.widget.RemoteViewsService.RemoteViewsFactory
 import com.example.myapplication2.R
+import com.example.myapplication2.database.Meeting
 import com.example.myapplication2.database.MeetingTransaction
 
 
 class ListWidgetService : RemoteViewsService() {
-//    private var myDB : MeetingTransaction? = null
+
     override fun onGetViewFactory(intent: Intent): RemoteViewsFactory {
         Log.w("Widget Count", "GOGOGOGO")
-//        myDB = MeetingTransaction(this)
+
         return ListRemoteViewsFactory(this.applicationContext, intent)
     }
 }
 
 internal class ListRemoteViewsFactory(context: Context, intent: Intent) :
     RemoteViewsFactory {
+    private var myDB : MeetingTransaction? = null
     private val mWidgetItems: MutableList<WidgetItem> = ArrayList<WidgetItem>()
     private val mContext: Context
     private val mAppWidgetId: Int
-
     override fun onCreate() {
-        for (i in 0 until mCount) {
-            mWidgetItems.add(WidgetItem("$i!"))
+        val allMeeting: List<Meeting> = myDB!!.viewAllMeeting()
+        for (i in allMeeting.indices) {
+            mWidgetItems.add(WidgetItem("${allMeeting[i].title}", "${allMeeting[i].tgl}", "${allMeeting[i].desc}"))
+            Log.w("widgetitem", "${mWidgetItems}")
         }
         try {
             Thread.sleep(3000)
@@ -40,15 +43,18 @@ internal class ListRemoteViewsFactory(context: Context, intent: Intent) :
 
     override fun onDestroy() {
         mWidgetItems.clear()
+        myDB?.endMeetingTransaction()
     }
 
     override fun getCount(): Int {
-        return mCount
+        return mWidgetItems.size
     }
 
     override fun getViewAt(position: Int): RemoteViews {
         val rv = RemoteViews(mContext.packageName, R.layout.widget_item)
-        rv.setTextViewText(R.id.widget_title, mWidgetItems[position].text)
+        rv.setTextViewText(R.id.widget_title, mWidgetItems[position].w_title)
+        rv.setTextViewText(R.id.widget_tgl, mWidgetItems[position].w_tgl)
+        rv.setTextViewText(R.id.widget_desc, mWidgetItems[position].w_desc)
         val extras = Bundle()
         extras.putInt(MyWidget.EXTRA_ITEM, position)
         val fillInIntent = Intent()
@@ -82,7 +88,7 @@ internal class ListRemoteViewsFactory(context: Context, intent: Intent) :
     }
 
     override fun onDataSetChanged() {
-
+//        var allMeeting: List<Meeting> = myDB!!.viewAllMeeting()
     }
 
     companion object {
@@ -95,6 +101,7 @@ internal class ListRemoteViewsFactory(context: Context, intent: Intent) :
             AppWidgetManager.EXTRA_APPWIDGET_ID,
             AppWidgetManager.INVALID_APPWIDGET_ID
         )
+        myDB = MeetingTransaction(this.mContext)
     }
 
 }
@@ -200,5 +207,80 @@ internal class ListRemoteViewsFactory(context: Context, intent: Intent) :
 //            AppWidgetManager.EXTRA_APPWIDGET_ID,
 //            AppWidgetManager.INVALID_APPWIDGET_ID
 //        )
+//    }
+//}
+
+
+//class WidgetRemoteViewsFactory(context: Context?, intent: Intent) :
+//    RemoteViewsFactory {
+//    private val context: Context? = null
+//    private val appWidgetId: Int
+//    private var widgetList: MutableList<String> = ArrayList()
+//    private val dbhelper: DBHelper
+//    private fun updateWidgetListView() {
+//        val widgetFruitsArray: Array<String> = dbhelper.retrieveFruitsList()
+//        val convertedToList: MutableList<String> =
+//            ArrayList<String>(Arrays.asList(widgetFruitsArray))
+//        widgetList = convertedToList
+//    }
+//
+//    override fun getCount(): Int {
+//        return widgetList.size
+//    }
+//
+//    override fun getItemId(position: Int): Long {
+//        return position.toLong()
+//    }
+//
+//    override fun getLoadingView(): RemoteViews {
+//        // TODO Auto-generated method stub
+//        return null
+//    }
+//
+//    override fun getViewAt(position: Int): RemoteViews {
+//        Log.d("WidgetCreatingView", "WidgetCreatingView")
+//        val remoteView = RemoteViews(
+//            context!!.packageName,
+//            R.layout.listview_row_item
+//        )
+//        Log.d("Loading", widgetList[position])
+//        remoteView.setTextViewText(R.id.listTV, widgetList[position])
+//        return remoteView
+//    }
+//
+//    override fun getViewTypeCount(): Int {
+//        // TODO Auto-generated method stub
+//        return 0
+//    }
+//
+//    override fun hasStableIds(): Boolean {
+//        // TODO Auto-generated method stub
+//        return false
+//    }
+//
+//    override fun onCreate() {
+//        // TODO Auto-generated method stub
+//        updateWidgetListView()
+//    }
+//
+//    override fun onDataSetChanged() {
+//        // TODO Auto-generated method stub
+//        updateWidgetListView()
+//    }
+//
+//    override fun onDestroy() {
+//        // TODO Auto-generated method stub
+//        widgetList.clear()
+//        dbhelper.close()
+//    }
+//
+//    init {
+//        this.context = context
+//        appWidgetId = intent.getIntExtra(
+//            AppWidgetManager.EXTRA_APPWIDGET_ID,
+//            AppWidgetManager.INVALID_APPWIDGET_ID
+//        )
+//        Log.d("AppWidgetId", appWidgetId.toString())
+//        dbhelper = DBHelper(this.context)
 //    }
 //}
