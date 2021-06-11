@@ -7,10 +7,10 @@ import android.view.View
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.myapplication2.database.FirstRunSharePref
-import com.example.myapplication2.database.Meeting
-import com.example.myapplication2.database.MeetingTransaction
+import com.example.myapplication2.database.*
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import org.jetbrains.anko.doAsync
+import org.jetbrains.anko.startActivityForResult
 import org.jetbrains.anko.uiThread
 
 class MainActivity : AppCompatActivity() {
@@ -30,13 +30,26 @@ class MainActivity : AppCompatActivity() {
         if (myFirstRun!!.firstRun) {
             val secondIntent = Intent(this, PreLoad::class.java)
             startActivity(secondIntent)
+            updateAdapter()
         }
-        updateAdapter()
+
+        val btn: FloatingActionButton = findViewById(R.id.floatingActionButton)
+        btn.setOnClickListener {
+            val intent = Intent(this, AddActivitity::class.java)
+            startActivityForResult(intent, REQUEST_CODE)
+        }
     }
 
     override fun onResume() {
         super.onResume()
         updateAdapter()
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == REQUEST_CODE && resultCode == RESULT_OK) {
+            updateAdapter()
+        }
     }
 
     private fun updateAdapter() {
@@ -46,10 +59,13 @@ class MainActivity : AppCompatActivity() {
             myDB = MeetingTransaction(this@MainActivity)
 //            layoutManager = LinearLayoutManager(this@MainActivity)
             var allMeeting: List<Meeting> = myDB!!.viewAllMeeting()
+//            myRecycler.adapter?.notifyDataSetChanged()
             uiThread {
                 if (allMeeting.size > 0) {
 //                    adapter = myRecyclerAdapter(allMeeting)
+
                     myRecycler.adapter = myRecyclerAdapter(allMeeting)
+
                 } else {
                     Toast.makeText(this@MainActivity,"There is no contact in the database. Start adding now", Toast.LENGTH_SHORT).show()
                 }
